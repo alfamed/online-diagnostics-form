@@ -3,7 +3,6 @@
 // локальные переменные
 $mailTo         = 'webmaster.alfamed@gmail.com'; //e-mail куда будут приходить письма с сайта (с заполненными данными и картинками)
 $postError      = false; //флаг определяющий ошибку при считывании данных из фронтенда (AJAX)
-$fileSize       = '';
 // TODO: В условие проверки post-запроса дописать проверку по отдельным полям с выводом предупреждающих сообщений если поля не заполнены
 // проверка если форма отправлена
 
@@ -13,18 +12,18 @@ if (isset($_POST)) {
     $postError = true;
 
   } else {
-    $clientName     = $_POST['name'];
+    $clientName = $_POST['name'];
   };
   // если в email имя ничего не заполнено то генерируем ошибку
   if (trim($_POST['email']) == '') {
     $postError = true;
 
   } else {
-    if (!eregi("^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,4}$", trim($_POST['email']))) {
+    if (!eregi("^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$", trim($_POST['email']))) {
       $postError = true;
 
     } else {
-      $clientEmail    = $_POST['email'];
+      $clientEmail = $_POST['email'];
     }
   };
   // если в age имя ничего не заполнено то генерируем ошибку
@@ -32,23 +31,16 @@ if (isset($_POST)) {
     $postError = true;
 
   } else {
-    $clientAge      = $_POST['age'];
+    $clientAge = $_POST['age'];
   };
-  // если в message имя ничего не заполнено то генерируем ошибку
+  // если в message имя ничего не заполнено то В поле сообщение вписываем стандартный текст
   if (trim($_POST['message']) == '') {
-    $postError = true;
-  //проверка изображений
-  for (var i = 0; i < count($_FILES['imageArray']['name']; i++)) {
-    if(is_uploaded_file($_FILES['imageArray']['tmp_name'])) {
-      $fileSize. = $_FILES['imageArray']['size'][i];
-    }
-  }
-
+    $clientMessage = 'Клиент ничего не ввел в поле "Сообщение"';
   } else {
-    $clientMessage  = $_POST['message'];
+    $clientMessage = $_POST['message'];
   };
 
-  $mailMessage    = 'Имя: '.$clientName."\n".'e-mail: '.$clientEmail."\n".'Возраст: '.$clientAge."\n".'Сообщение: '.$clientMessage."\n";
+  $mailMessage = 'Имя: '.$clientName."\n".'e-mail: '.$clientEmail."\n".'Возраст: '.$clientAge."\n".'Сообщение: '.$clientMessage."\n";
   // стандартный заголовок письма
   $subject  = 'Заявка на онлайн-диагностику';
   $headers  = "From: " . strip_tags($clientEmail) . "\r\n";
@@ -74,10 +66,6 @@ if (isset($_POST)) {
     }
 
   }
-
-
-
-
 
 }
 

@@ -8,21 +8,21 @@
   <form id="online-diagnostics">
     <div id="name-blk">
       <label for="name" class="form-label">Имя:</label>
-      <input type="text" name="name" id="name" class="input-field" placeholder="например, Иван Иванович Иванов"/>
+      <input type="text" name="name" id="name" class="input-field" placeholder="например, Иван Иванович Иванов" autocomplete="off"/>
     </div>
     <div id="email-blk">
       <label for="email" class="form-label">Email:</label>
-      <input type="email" name="email" id="email" class="input-field" placeholder="например, ivan@yandex.ru"/>
+      <input type="text" name="email" id="email" class="input-field" placeholder="например, ivan@yandex.ru" autocomplete="off"/>
     </div>
     <div id="age-blk">
       <label for="age" class="form-label">Возраст:</label>
-      <input type="text" name="age" id="age" class="input-field" placeholder="например, 54"/>
+      <input type="text" name="age" id="age" class="input-field" placeholder="например, 54" autocomplete="off"/>
     </div>
     <div id="message-blk">
       <label for="message" class="form-label">Сообщение:</label>
       <textarea type="text" rows="5" id="message" rows="5" name="message" class="input-field" placeholder="Детали заявки…"></textarea>
     </div>
-    <input type="button" value="Выбрать файлы" id="choose-files" class="form-btn"/>
+    <input type="file" value="Выбрать файлы" id="choose-files" class="form-btn"/>
     <input type="button" value="Очистить" id="reset-files" class="form-btn"/>
     <div id="uploaded-file-name"></div>
     <input type="submit" value="Подтвердить заявку" id="send-files" class="form-btn"/>
