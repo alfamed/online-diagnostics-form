@@ -10,10 +10,96 @@ $(document).ready(function(){
         name:true,
         email:true,
         age:true
-      };
+      },
+      files = [];
+
+  $('#choose-files').on('change',prepareUpload);
+  function prepareUpload(event)
+    {
+      // files = event.target.files;
+      // if (files.length>0) {
+      //   var lastLength = files.length,
+      //       newLength = 0;
+      //   for (var key in event.target.files) {
+      //     if (/^\d+$/.test(key)) {
+      //       newLength = lastLength+1+parseInt(key);
+      //       files[newLength] = event.target.files[key];
+      //     }
+      //   }
+      // } else {
+      //   files = event.target.files;
+      // }
+      files.push(event.target.files);
+      console.log(files);
+    };
+
+
+  function submitForm(event, data){
+    $form = $(event.target);
+    var formData = $form.serialize();
+
+    $.each(data.files, function(key, value){
+      formData = formData + '&filenames[]=' + value;
+    });
+
+    $.ajax({
+        url: 'submit.php',
+        type: 'POST',
+        data: formData,
+        cache: false,
+        dataType: 'json',
+        success: function(data, textStatus, jqXHR){
+          if (typeof data.error === 'undefined') {
+            console.log('SUCCESS: ' + data.success);
+          } else {
+            console.log('ERRORS: ' + data.error);
+          }
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+          console.log('ERRORS: ' + textStatus);
+        },
+        complete: function()
+        {
+          // STOP LOADING SPINNER
+        }
+    });
+  }
+
+
+  $('form').on('submit', uploadFiles);
+
+  function uploadFiles(event){
+
+    event.stopPropagation();
+    event.preventDefault();
+
+    var data = new FormData();
+    $.each(files, function(key, value){
+      data.append(key, value);
+    });
+
+    $.ajax({
+      url: 'submit.php?files',
+      type: 'POST',
+      data: data,
+      cache: false,
+      dataType: 'json',
+      processData: false,
+      contentType: false,
+      success: function(data, textStatus, jqXHR){
+        if (typeof data.error === 'undefined') {
+          submitForm(event, data);
+        } else {
+          console.log('ERRORS: ' + data.error);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        console.log('ERRORS: ' + textStatus);
+      }
+    });
+  }
 
   function sendAjaxForm(){
-    console.log(validate);
     $.ajax({
       url:'engine.php',
       type: 'POST',
@@ -24,6 +110,7 @@ $(document).ready(function(){
         message : fMessage
       },
       success: function(){
+
         // показывем сообщение что форма отправлена
         $('body').prepend('<div id="form-success"><div class="close-cross"></div><div id="form-success-message">Спасибо за обращение!</ br>Сообщение отправлено.');
         var formSuccessTimer = setTimeout(function(){
@@ -121,7 +208,7 @@ $(document).ready(function(){
     // проверка правильности валидации всех полей
     // если валидация выполнена то отправляем данные на сервер
     if (validate.name&&validate.email&&validate.age) {
-      sendAjaxForm();
+      // sendAjaxForm();
     }
 
   });//end bind submit

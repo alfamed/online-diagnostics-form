@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <form id="online-diagnostics">
+  <form id="online-diagnostics" action="submit.php" enctype="multipart/form-data">
     <div id="name-blk">
       <label for="name" class="form-label">Имя:</label>
       <input type="text" name="name" id="name" class="input-field" placeholder="например, Иван Иванович Иванов" autocomplete="off"/>
@@ -22,7 +22,10 @@
       <label for="message" class="form-label">Сообщение:</label>
       <textarea type="text" rows="5" id="message" rows="5" name="message" class="input-field" placeholder="Детали заявки…"></textarea>
     </div>
-    <input type="file" value="Выбрать файлы" id="choose-files" class="form-btn"/>
+    <div class="file-upload">
+      <button type="button" class="form-btn">Выбрать файлы</button>
+      <input type="file" name="choose-files[]" multiple value="Выбрать файлы" id="choose-files"/>
+    </div>
     <input type="button" value="Очистить" id="reset-files" class="form-btn"/>
     <div id="uploaded-file-name"></div>
     <input type="submit" value="Подтвердить заявку" id="send-files" class="form-btn"/>
