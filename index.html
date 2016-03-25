@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <form id="online-diagnostics" action="submit.php" enctype="multipart/form-data">
+  <div id="online-diagnostics">
     <div id="name-blk">
       <label for="name" class="form-label">Имя:</label>
       <input type="text" name="name" id="name" class="input-field" placeholder="например, Иван Иванович Иванов" autocomplete="off"/>
@@ -29,8 +29,8 @@
     <input type="button" value="Очистить" id="reset-files" class="form-btn"/>
     <div id="uploaded-file-name"></div>
     <input type="submit" value="Подтвердить заявку" id="send-files" class="form-btn"/>
-  </form>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  </div>
+  <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
   <script type="text/javascript" src="form.js"></script>
 </body>
 </html>

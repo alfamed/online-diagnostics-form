@@ -9,143 +9,35 @@ $(document).ready(function(){
       validate = {
         name:true,
         email:true,
-        age:true
+        age:true,
+        file:true
       },
-      files = [];
+      files = [],
+      filecount = 0,
+      fileExt = ['jpg', 'jpeg', 'gif', 'png', 'tiff', 'bmp'],
+      formData;
 
   $('#choose-files').on('change',prepareUpload);
-  function prepareUpload(event)
-    {
-      // files = event.target.files;
-      // if (files.length>0) {
-      //   var lastLength = files.length,
-      //       newLength = 0;
-      //   for (var key in event.target.files) {
-      //     if (/^\d+$/.test(key)) {
-      //       newLength = lastLength+1+parseInt(key);
-      //       files[newLength] = event.target.files[key];
-      //     }
-      //   }
-      // } else {
-      //   files = event.target.files;
-      // }
-      files.push(event.target.files);
-      console.log(files);
+  function prepareUpload(event){
+      var fileCorrect = true;
+      $.each(event.target.files, function(){
+        if (!(fileExt.join().search(this.type.split('/')[1]) != -1)||(this.size > 2097152)) {
+          alert('Фотография должна быть в формате jpeg, jpg, png, tiff, bmp, до 2Мб объемом');
+          fileCorrect = false;
+        };
+      });
+
+      if (fileCorrect) {
+        $.each(event.target.files, function(){
+          // push each file of multiselect file dialog to array
+          files.push(this);
+          filecount++;
+        });
+      }
     };
 
+  $('#send-files').on('click', function(){
 
-  function submitForm(event, data){
-    $form = $(event.target);
-    var formData = $form.serialize();
-
-    $.each(data.files, function(key, value){
-      formData = formData + '&filenames[]=' + value;
-    });
-
-    $.ajax({
-        url: 'submit.php',
-        type: 'POST',
-        data: formData,
-        cache: false,
-        dataType: 'json',
-        success: function(data, textStatus, jqXHR){
-          if (typeof data.error === 'undefined') {
-            console.log('SUCCESS: ' + data.success);
-          } else {
-            console.log('ERRORS: ' + data.error);
-          }
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-          console.log('ERRORS: ' + textStatus);
-        },
-        complete: function()
-        {
-          // STOP LOADING SPINNER
-        }
-    });
-  }
-
-
-  $('form').on('submit', uploadFiles);
-
-  function uploadFiles(event){
-
-    event.stopPropagation();
-    event.preventDefault();
-
-    var data = new FormData();
-    $.each(files, function(key, value){
-      data.append(key, value);
-    });
-
-    $.ajax({
-      url: 'submit.php?files',
-      type: 'POST',
-      data: data,
-      cache: false,
-      dataType: 'json',
-      processData: false,
-      contentType: false,
-      success: function(data, textStatus, jqXHR){
-        if (typeof data.error === 'undefined') {
-          submitForm(event, data);
-        } else {
-          console.log('ERRORS: ' + data.error);
-        }
-      },
-      error: function(jqXHR, textStatus, errorThrown){
-        console.log('ERRORS: ' + textStatus);
-      }
-    });
-  }
-
-  function sendAjaxForm(){
-    $.ajax({
-      url:'engine.php',
-      type: 'POST',
-      data: {
-        name : fName,
-        email : fEmail,
-        age : fAge,
-        message : fMessage
-      },
-      success: function(){
-
-        // показывем сообщение что форма отправлена
-        $('body').prepend('<div id="form-success"><div class="close-cross"></div><div id="form-success-message">Спасибо за обращение!</ br>Сообщение отправлено.');
-        var formSuccessTimer = setTimeout(function(){
-          if ($('#form-success').length > 0) {
-            $('#form-success').fadeOut(200,function(){
-              $(this).remove();
-            });
-          }
-        },2000);
-
-        // прячем модальное окно успешной отправки данных формы
-        $('#form-success').click(function(){
-          if (formSuccessTimer) {
-            clearTimeout(formSuccessTimer);
-            $(this).fadeOut(200,function(){
-              $(this).remove();
-            });
-          }
-        });
-
-        // очищаем все поля и переменные
-        fName     = '';
-        fEmail    = '';
-        fAge      = '';
-        fMessage  = '';
-        $("#name").val('');
-        $('#email').val('');
-        $('#age').val('');
-        $('#message').val('');
-      }
-    })
-  }//end sendAjaxForm
-
-  $('#online-diagnostics').bind('submit', function(e){
-    e.preventDefault();
     fName = $("#name").val();
     fEmail = $('#email').val();
     fAge = $('#age').val();
@@ -205,13 +97,80 @@ $(document).ready(function(){
       validate.age = true;
     }
 
-    // проверка правильности валидации всех полей
-    // если валидация выполнена то отправляем данные на сервер
-    if (validate.name&&validate.email&&validate.age) {
-      // sendAjaxForm();
+    // проверка наличия прикрепленного хотя бы одного файла
+    if (filecount>0) {
+      validate.file = true;
+    } else {
+      alert('Файлы для отправки не выбраны!')
+      validate.file = false;
     }
 
-  });//end bind submit
+    // проверка правильности валидации всех полей
+    // если валидация выполнена то отправляем данные на сервер
+    if (validate.name&&validate.email&&validate.age&&validate.file) {
+
+      formData = new FormData();
+      formData.append('name', fName);
+      formData.append('email', fEmail);
+      formData.append('age', fAge);
+      formData.append('message', fMessage);
+
+      // push all files from files-array to formData
+      for (var i = 0; i < files.length; i++) {
+        formData.append('file_attach'+i,files[i]);
+      }
+
+      $.ajax({
+        url:'engine.php',
+        type: 'POST',
+        data: formData,
+        dataType:'json',
+        processData: false,
+        contentType: false,
+        success: function(response){
+
+          if(response.type == 'error'){ //load json data from server and output message
+            $('body').prepend('<div id="form-success"><div class="close-cross"></div><div id="form-success-message" class="error-msg">'+response.text);
+  				}else{
+            $('body').prepend('<div id="form-success"><div class="close-cross"></div><div id="form-success-message">'+response.text);
+  				}
+          // показывем сообщение что форма отправлена
+          // $('body').prepend('<div id="form-success"><div class="close-cross"></div><div id="form-success-message">Спасибо за обращение!</ br>Сообщение отправлено.');
+          var formSuccessTimer = setTimeout(function(){
+            if ($('#form-success').length > 0) {
+              $('#form-success').fadeOut(200,function(){
+                $(this).remove();
+              });
+            }
+          },20000);
+
+          // прячем модальное окно успешной отправки данных формы
+          $('#form-success').click(function(){
+            if (formSuccessTimer) {
+              clearTimeout(formSuccessTimer);
+              $(this).fadeOut(200,function(){
+                $(this).remove();
+              });
+            }
+          });
+
+          // очищаем все поля и переменные
+          fName     = '';
+          fEmail    = '';
+          fAge      = '';
+          fMessage  = '';
+          $("#name").val('');
+          $('#email').val('');
+          $('#age').val('');
+          $('#message').val('');
+        },//end success
+        error: function(jqXHR, textStatus, errorThrown){
+        }
+
+      })
+    }//конец условия проверки валидации
+
+  });//end submit
 
   // прячем красную подсказку возле полей ввода данных клиента
   $('input').on('keyup',function(e){
@@ -221,13 +180,5 @@ $(document).ready(function(){
       });
     }
   });
-
-
-
-  // $('input').change(function(){
-  //   console.log($(this));
-  // });
-
-
 
 });//end ready
