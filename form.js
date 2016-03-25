@@ -19,22 +19,88 @@ $(document).ready(function(){
 
   $('#choose-files').on('change',prepareUpload);
   function prepareUpload(event){
+
+    if ((event.target.files.length+filecount)<=5) {
+
       var fileCorrect = true;
       $.each(event.target.files, function(){
         if (!(fileExt.join().search(this.type.split('/')[1]) != -1)||(this.size > 2097152)) {
-          alert('Фотография должна быть в формате jpeg, jpg, png, tiff, bmp, до 2Мб объемом');
+
+          // показывем сообщение что формат не верный
+          $('body').prepend('<div id="form-success"><div class="close-cross"></div><div id="form-success-message" class="error-bg">Фотографии должны быть в формате jpeg, jpg, png, tiff, bmp, до 2Мб объемом');
+          var formSuccessTimer = setTimeout(function(){
+            if ($('#form-success').length > 0) {
+              $('#form-success').fadeOut(200,function(){
+                $(this).remove();
+              });
+            }
+          },20000);
+
+          // прячем модальное окно успешной отправки данных формы
+          $('#form-success').click(function(){
+            if (formSuccessTimer) {
+              clearTimeout(formSuccessTimer);
+              $(this).fadeOut(200,function(){
+                $(this).remove();
+              });
+            }
+          });
+
           fileCorrect = false;
         };
       });
 
       if (fileCorrect) {
         $.each(event.target.files, function(){
-          // push each file of multiselect file dialog to array
           files.push(this);
           filecount++;
+          $('#uploaded-file-name').append('<span class="uploaded-name">'+this['name']);
+          $('.uploaded-name:last-child').slideDown();
         });
       }
-    };
+    } else {
+      // показывем сообщение что количество файлов должно быть не более 5
+      $('body').prepend('<div id="form-success"><div class="close-cross"></div><div id="form-success-message" class="error-bg">Количество файлов должно быть не более 5');
+      var formSuccessTimer = setTimeout(function(){
+        if ($('#form-success').length > 0) {
+          $('#form-success').fadeOut(200,function(){
+            $(this).remove();
+          });
+        }
+      },20000);
+
+      // прячем модальное окно успешной отправки данных формы
+      $('#form-success').click(function(){
+        if (formSuccessTimer) {
+          clearTimeout(formSuccessTimer);
+          $(this).fadeOut(200,function(){
+            $(this).remove();
+          });
+        }
+      });
+
+    }
+
+    $('#choose-files').val('');
+
+  };
+  // Сбрасываем все добавленные файлы
+  $('#reset-files').on('click',function(){
+
+    if (filecount > 0) {
+      filecount = 0;
+      files = [];
+
+      $('#choose-files').val('');
+
+      $('.uploaded-name').each(function(){
+        $(this).slideUp("normal",function(){
+          $(this).remove();
+        });
+      });
+    }
+
+  });
 
   $('#send-files').on('click', function(){
 
@@ -159,10 +225,23 @@ $(document).ready(function(){
           fEmail    = '';
           fAge      = '';
           fMessage  = '';
+
           $("#name").val('');
           $('#email').val('');
           $('#age').val('');
           $('#message').val('');
+
+          filecount = 0;
+          files = [];
+
+          $('#choose-files').val('');
+
+          if ($('.uploaded-name')) {
+            $('.uploaded-name').each(function(){
+              this.remove();
+            });
+          }
+
         },//end success
         error: function(jqXHR, textStatus, errorThrown){
         }

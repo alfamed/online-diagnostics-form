@@ -63,9 +63,8 @@ body {
 
 #online-diagnostics #send-files {
   display: block;
-  margin: 0 auto;
+  margin: 20px auto 0;
   width: 187px;
-  margin-top: 20px;
 }
 
 #online-diagnostics #name-blk,
@@ -105,7 +104,7 @@ body {
   top: 15%;
   left: 50%;
   width: 300px;
-  height: 50px;
+  height: auto;
   margin-left: -150px;
   border: 1px solid #6B6B6B;
   border-radius: 10px;
@@ -182,5 +181,26 @@ body {
 }
 
 .error-msg {
-  color: red;
+  color: red !important;
+}
+
+.error-bg {
+  background-image: -webkit-linear-gradient(#E13434, #B50101) !important;
+  background-image: -o-linear-gradient(#E13434, #B50101) !important;
+  background-image: linear-gradient(#E13434, #B50101) !important;
+}
+
+.uploaded-name {
+  display: none;
+  height: 18px;
+  width: 100%;
+  overflow: hidden;
+  font-size: 16px;
+  text-align: center;
+  text-shadow: none;
+  color: #004c71;
+  background-color: white;
+  box-shadow: 0 1px 1px #555;
+  border-radius: 5px;
+  margin: 0 0 5px;
 }
