@@ -127,7 +127,7 @@ if (isset($_POST)) {
         $output = json_encode(array('type'=>'error', 'text' => 'Ошибка отправка формы! Проверьте введенные Вами данные.'));
         die($output);
     }else{
-        $output = json_encode(array('type'=>'message', 'text' => 'Спасибо '.$clientName .'. Ваша форма успешно отправлена'));
+        $output = json_encode(array('type'=>'message', 'text' => 'Спасибо '.$clientName .'. Ваша форма диагностики успешно отправлена'));
         die($output);
     }
   }//end postError check
