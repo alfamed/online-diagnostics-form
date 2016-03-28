@@ -117,6 +117,14 @@ $(document).ready(function(){
         "right":"-113px",
         "display":"none"
       }).fadeIn(fadeTime);
+    } else if (fName.length > 80) {
+      validate.name = false;
+      $('#name-blk').append('<div class="error-box">').find('.error-box').html('Максимально допустимо 80 символов!').css({
+        "bottom":"-16px",
+        "right":"-119px",
+        "display":"none",
+        "width":"105px"
+      }).fadeIn(fadeTime);
     } else if (fName == '') {
       validate.name = false;
     } else {
